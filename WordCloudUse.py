@@ -1,4 +1,3 @@
-import MeCab
 from wordcloud import WordCloud
 
 
@@ -7,13 +6,6 @@ def read_file():
     with open(FILE_NAME, "r", encoding="utf-8") as f:
         CONTENT = f.read()
     return CONTENT
-
-
-def mecab_wakati(text):
-    # 形態素解析を行う
-    tagger = MeCab.Tagger("-Owakati")  # 分かち書き
-    parse = tagger.parse(text)
-    return parse
 
 
 class WordCloudGenerator:
@@ -37,7 +29,10 @@ class WordCloudGenerator:
         self.regexp = regexp
 
     def wordcloud_draw(self, parse):
-        # wordcloud
+        """
+        WordCloud画像出力
+        @param: parse  WordCloudのparse
+        """
         wordcloud = WordCloud(font_path=self.font_path, background_color=self.background_color, width=self.width, height=self.height,
                               collocations=self.collocations, stopwords=self.stopwords, max_words=self.max_words, regexp=self.regexp)
 
@@ -46,6 +41,8 @@ class WordCloudGenerator:
 
 
 if __name__ == "__main__":
+    import MecabUse as mecab
+
     # 入力テキストファイル
     FILE_NAME = "neko.txt"
     OUT_FILE_NAME = "output_wordcloud.png"
@@ -58,7 +55,7 @@ if __name__ == "__main__":
     FONT_FILE = "C:\Windows\Fonts\MSGOTHIC.TTC"  # フォントファイルのパス
 
     CONTENT = read_file()  # ファイル読み取り
-    wakati = mecab_wakati(CONTENT)  # 形態素解析
+    wakati = mecab.wakati(CONTENT)  # 形態素解析
 
     wordCloudGenerator = WordCloudGenerator(font_path=FONT_FILE, background_color="white", width=WIDTH, height=HEIGHT, collocations=False,
                                             stopwords=STOP_WORDS, max_words=MAX_WORDS, regexp=r"[\w']+")  # WordCloud初期化
