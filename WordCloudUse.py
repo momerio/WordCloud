@@ -1,4 +1,7 @@
+
+import MeCab
 from wordcloud import WordCloud
+import collections
 
 
 def read_file():
@@ -6,6 +9,13 @@ def read_file():
     with open(FILE_NAME, "r", encoding="utf-8") as f:
         CONTENT = f.read()
     return CONTENT
+
+
+def mecab_wakati(text):
+    # 形態素解析を行う
+    tagger = MeCab.Tagger("-Owakati")  # 分かち書き
+    parse = tagger.parse(text)
+    return parse
 
 
 class WordCloudGenerator:
@@ -30,19 +40,28 @@ class WordCloudGenerator:
 
     def wordcloud_draw(self, parse):
         """
-        WordCloud画像出力
-        @param: parse  WordCloudのparse
+        wordcloud画像を出力
+        @param
+            parse 形態素解析結果
         """
-        wordcloud = WordCloud(font_path=self.font_path, background_color=self.background_color, width=self.width, height=self.height,
-                              collocations=self.collocations, stopwords=self.stopwords, max_words=self.max_words, regexp=self.regexp)
+        self.wordcloud = WordCloud(font_path=self.font_path, background_color=self.background_color, width=self.width, height=self.height,
+                                   collocations=self.collocations, stopwords=self.stopwords, max_words=self.max_words, regexp=self.regexp, repeat=False)
+        self.wordcloud.generate(parse)
+        self.wordcloud.to_file(self.out_file_name)
 
-        wordcloud.generate(parse)
-        wordcloud.to_file(self.out_file_name)
+    def frequency_count(self, wakati_text: str) -> dict:
+        """
+        単語の頻出頻度算出
+        @param 
+            wakati_text str 分かち書きテキスト
+        """
+        words = wakati_text.split(" ")
+        words = [word for word in words if word not in self.stopwords]
+        word_freq = collections.Counter(words)
+        return word_freq
 
 
 if __name__ == "__main__":
-    import MecabUse as mecab
-
     # 入力テキストファイル
     FILE_NAME = "neko.txt"
     OUT_FILE_NAME = "output_wordcloud.png"
@@ -55,7 +74,7 @@ if __name__ == "__main__":
     FONT_FILE = "C:\Windows\Fonts\MSGOTHIC.TTC"  # フォントファイルのパス
 
     CONTENT = read_file()  # ファイル読み取り
-    wakati = mecab.wakati(CONTENT)  # 形態素解析
+    wakati = mecab_wakati(CONTENT)  # 形態素解析
 
     wordCloudGenerator = WordCloudGenerator(font_path=FONT_FILE, background_color="white", width=WIDTH, height=HEIGHT, collocations=False,
                                             stopwords=STOP_WORDS, max_words=MAX_WORDS, regexp=r"[\w']+")  # WordCloud初期化
