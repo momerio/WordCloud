@@ -22,6 +22,7 @@ run.pyを実行すれば良い．
 ## 実行例
 ` python .\run.py -D input -O output `
 
+inputディレクトリにあるtxtファイルをすべてWordCloudをして，可視化ファイルと単語頻出度ファイルをoutputディレクトリに出力する．
 
 ## 出力例
 ↓neko.txt(吾輩は猫であるの一部)をWordCloudした結果↓
